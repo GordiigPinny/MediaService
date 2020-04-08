@@ -1,12 +1,14 @@
 from django.db import models
 from django.core.validators import validate_image_file_extension
+from django.conf import settings
 from Mediafiles.managers import ImageFileManager
 
 
 def directory_path(instance, filename):
-    return f'{instance.object_type}/{filename}' \
+    test_dir = 'test/' if settings.TESTING else ''
+    return f'{test_dir}{instance.object_type}/{filename}' \
         if instance.object_type != instance.PLACE_TYPE \
-        else f'{instance.object_type}/{instance.object_id}/{filename}'
+        else f'{test_dir}{instance.object_type}/{instance.object_id}/{filename}'
 
 
 class ImageFiles(models.Model):

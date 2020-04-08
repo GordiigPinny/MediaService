@@ -3,6 +3,8 @@ from django.db.models import Model, QuerySet
 from rest_framework.test import APIClient
 from django.test import TestCase
 from django.contrib.auth.models import User
+from django.conf import settings
+from shutil import rmtree
 
 
 class BaseTestCase(TestCase):
@@ -13,6 +15,11 @@ class BaseTestCase(TestCase):
         self.user, _ = User.objects.get_or_create(username=self.user_username, password='')
         self.user.set_password(self.user_password)
         self.user.save()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        rmtree(settings.MEDIA_ROOT + '/test/', ignore_errors=True)
 
     def _get_api_client(self, auth: bool) -> APIClient:
         client = APIClient()
