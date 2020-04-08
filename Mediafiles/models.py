@@ -23,7 +23,7 @@ class ImageFiles(models.Model):
         (USER_TYPE, USER_TYPE),
     )
 
-    image = models.ImageField(upload_to=directory_path, blank=False, null=True,
+    image = models.ImageField(upload_to=directory_path, blank=False, null=False,
                               validators=[validate_image_file_extension])
     object_id = models.PositiveIntegerField(null=False, blank=False)
     object_type = models.CharField(choices=OBJECT_TYPE_CHOICES, max_length=32)
