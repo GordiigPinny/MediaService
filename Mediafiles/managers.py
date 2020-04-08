@@ -6,7 +6,7 @@ class ImageFileManager(Manager):
     ORM-менеджер изображений
     """
     def get_queryset(self):
-        super().filter(deleted_flg=False)
+        return super().get_queryset().filter(deleted_flg=False)
 
     def with_deleted(self):
-        super().get_queryset()
+        return super().get_queryset()
