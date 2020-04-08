@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import validate_image_file_extension
+from Mediafiles.managers import ImageFileManager
 
 
 def directory_path(instance, filename):
@@ -29,6 +30,8 @@ class ImageFiles(models.Model):
     created_by = models.PositiveIntegerField(null=False, blank=False)
     created_dt = models.DateTimeField(auto_now_add=True)
     deleted_flg = models.BooleanField(default=False)
+
+    objects = ImageFileManager()
 
     @property
     def image_url(self):
