@@ -50,5 +50,9 @@ class ImageFiles(models.Model):
         self.image.save(filename, file_contents)
         self.save()
 
+    def soft_delete(self):
+        self.deleted_flg = True
+        self.save(update_fields=['deleted_flg'])
+
     def __str__(self):
         return self.image_name or 'Empty image'

@@ -7,6 +7,7 @@ class ImageFilesMetaSerializer(serializers.ModelSerializer):
     """
     Сериализатор мета-инфы о изображении
     """
+    image_url = serializers.CharField(read_only=True)
     object_id = serializers.IntegerField(min_value=1, required=True, allow_null=False)
     object_type = serializers.ChoiceField(choices=ImageFiles.OBJECT_TYPE_CHOICES, required=True,
                                           allow_null=False)
@@ -23,6 +24,7 @@ class ImageFilesMetaSerializer(serializers.ModelSerializer):
             'created_by',
             'created_dt',
             'deleted_flg',
+            'image_url',
         ]
 
 
@@ -30,7 +32,7 @@ class ImageFilesSerializer(ImageFilesMetaSerializer):
     """
     Сериализатор изображения с метой
     """
-    image = serializers.ImageField(required=True, allow_null=False,
+    image = serializers.ImageField(required=True, allow_null=False, write_only=True,
                                    validators=[validate_image_file_extension])
 
     class Meta(ImageFilesMetaSerializer.Meta):
