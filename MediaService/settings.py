@@ -23,14 +23,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 's(vu4ja=_l&oa$hs7af-n9v)c45^yprr@9k4j=1m-l6ip8=8f5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
 
 # Application definition
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,6 +38,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+THIRD_PARTY_APPS = [
+    'rest_framework',
+]
+
+DEV_APPS = [
+    'Mediafiles',
+]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + DEV_APPS
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -117,4 +128,21 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/static/')
+
 STATIC_URL = '/static/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+MEDIA_URL = '/media/'
+
+
+try:
+    from .settings_local import *
+except ImportError:
+    pass
+
+try:
+    from ApiRequesters.settings import *
+except ImportError as e:
+    raise e
