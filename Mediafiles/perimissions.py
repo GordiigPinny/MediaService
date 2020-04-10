@@ -40,7 +40,7 @@ class AddNewImagePermission(BasePermission):
         try:
             object_type = request.data['object_type']
         except KeyError:
-            return False
+            object_type = None
         if object_type in ('achievement', 'gpin', 'ppin'):
             return IsSuperuser().has_permission(request, view)
         elif object_type == 'place':
@@ -48,4 +48,4 @@ class AddNewImagePermission(BasePermission):
         elif object_type == 'user':
             return IsAuthenticated().has_permission(request, view)
         else:
-            return False
+            return True

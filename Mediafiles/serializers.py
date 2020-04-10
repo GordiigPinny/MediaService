@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from Mediafiles.models import ImageFiles
 from django.core.validators import validate_image_file_extension
+from ApiRequesters.Auth.AuthRequester import AuthRequester
+from ApiRequesters.exceptions import BaseApiRequestError
+from ApiRequesters.utils import get_token_from_request
 
 
 class ImageFilesMetaSerializer(serializers.ModelSerializer):
@@ -11,7 +14,7 @@ class ImageFilesMetaSerializer(serializers.ModelSerializer):
     object_id = serializers.IntegerField(min_value=1, required=True, allow_null=False)
     object_type = serializers.ChoiceField(choices=ImageFiles.OBJECT_TYPE_CHOICES, required=True,
                                           allow_null=False)
-    created_by = serializers.IntegerField(min_value=1, required=True, allow_null=False)
+    created_by = serializers.IntegerField(min_value=1, required=False, allow_null=True, default=True)
     created_dt = serializers.DateTimeField(read_only=True)
     deleted_flg = serializers.BooleanField(read_only=True)
 
@@ -26,6 +29,17 @@ class ImageFilesMetaSerializer(serializers.ModelSerializer):
             'deleted_flg',
             'image_url',
         ]
+
+    def validate_created_by(self, value):
+        if value:
+            return value
+        r = AuthRequester()
+        token = get_token_from_request(self.context['request'])
+        try:
+            _, auth_json = r.get_user_info(token)
+            return auth_json['id']
+        except BaseApiRequestError:
+            raise serializers.ValidationError('Не получается получить юзера по токену, попробуйте позже')
 
 
 class ImageFilesSerializer(ImageFilesMetaSerializer):
