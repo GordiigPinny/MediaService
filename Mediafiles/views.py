@@ -3,12 +3,14 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.pagination import LimitOffsetPagination
 from Mediafiles.models import ImageFiles
 from Mediafiles.serializers import ImageFilesMetaSerializer, ImageFilesSerializer
+from Mediafiles.perimissions import WriteOnlyBySuperuser, AddNewImagePermission
 
 
 class AddImageView(CreateAPIView):
     """
     Добавление изображения
     """
+    permission_classes = (AddNewImagePermission, )
     parser_classes = (MultiPartParser, )
     serializer_class = ImageFilesSerializer
 
@@ -17,6 +19,7 @@ class ImageView(RetrieveDestroyAPIView):
     """
     Показ и удаление изображения по айди
     """
+    permission_classes = (WriteOnlyBySuperuser, )
     serializer_class = ImageFilesMetaSerializer
 
     def get_queryset(self):
