@@ -4,9 +4,10 @@ from rest_framework.pagination import LimitOffsetPagination
 from Mediafiles.models import ImageFiles
 from Mediafiles.serializers import ImageFilesMetaSerializer, ImageFilesSerializer
 from Mediafiles.perimissions import WriteOnlyBySuperuser, AddNewImagePermission
+from ApiRequesters.Stats.decorators import collect_request_stats_decorator, CollectStatsMixin
 
 
-class AddImageView(CreateAPIView):
+class AddImageView(CreateAPIView, CollectStatsMixin):
     """
     Добавление изображения
     """
@@ -14,8 +15,12 @@ class AddImageView(CreateAPIView):
     parser_classes = (MultiPartParser, )
     serializer_class = ImageFilesSerializer
 
+    @collect_request_stats_decorator()
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
-class ImageView(RetrieveDestroyAPIView):
+
+class ImageView(RetrieveDestroyAPIView, CollectStatsMixin):
     """
     Показ и удаление изображения по айди
     """
@@ -31,8 +36,16 @@ class ImageView(RetrieveDestroyAPIView):
     def perform_destroy(self, instance: ImageFiles):
         instance.soft_delete()
 
+    @collect_request_stats_decorator()
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
-class TypedImagesView(ListAPIView):
+    @collect_request_stats_decorator()
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)
+
+
+class TypedImagesView(ListAPIView, CollectStatsMixin):
     """
     Список изображений для object_type и object_id
     """
@@ -49,6 +62,7 @@ class TypedImagesView(ListAPIView):
         return all_.filter(object_id=self.kwargs[self.object_id_kwarg],
                            object_type=self.kwargs[self.object_type_kwarg])
 
+    @collect_request_stats_decorator()
     def get(self, request, *args, **kwargs):
         response = super().get(request, args, kwargs)
         if response.status_code != 200:
