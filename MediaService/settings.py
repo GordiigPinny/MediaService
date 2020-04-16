@@ -149,3 +149,5 @@ except ImportError as e:
 
 APP_ID = ENV['MEDIA_APP_ID']
 APP_SECRET = ENV['MEDIA_SECRET']
+
+ALLOW_REQUESTS = True
