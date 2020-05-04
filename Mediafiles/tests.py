@@ -1,3 +1,5 @@
+from shutil import rmtree
+from django.conf import settings
 from TestUtils.models import BaseTestCase, APIClient
 from Mediafiles.models import ImageFiles
 
@@ -47,6 +49,11 @@ class AddImageViewTestCase(BaseTestCase):
             'created_by': self.user.id,
             'image': open('TestUtils/testfile.txt', 'rb'),
         }
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        rmtree(settings.MEDIA_ROOT + '/test/', ignore_errors=True)
 
     def testPost201_OK(self):
         client = APIClient()

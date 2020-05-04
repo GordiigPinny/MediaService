@@ -1,3 +1,5 @@
+from io import BytesIO
+from PIL import Image
 from rest_framework import serializers
 from Mediafiles.models import ImageFiles
 from django.core.validators import validate_image_file_extension
@@ -42,17 +44,49 @@ class ImageFilesMetaSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Не получается получить юзера по токену, попробуйте позже')
 
 
+def image_validator(value):
+    CORRECT_FORMATS = ['jpg', 'jpeg', 'png', 'heic', 'gif']
+    filename_splitted = value.name.split('.')
+    if len(filename_splitted) < 2:
+        raise serializers.ValidationError('Wrong image extension')
+    if filename_splitted[-1].lower() not in CORRECT_FORMATS:
+        raise serializers.ValidationError('Wrong image extension')
+
+
 class ImageFilesSerializer(ImageFilesMetaSerializer):
     """
     Сериализатор изображения с метой
     """
     image = serializers.ImageField(required=True, allow_null=False, write_only=True,
-                                   validators=[validate_image_file_extension])
+                                   validators=[image_validator])
 
     class Meta(ImageFilesMetaSerializer.Meta):
         fields = ImageFilesMetaSerializer.Meta.fields + [
             'image',
         ]
+
+    def validate(self, attrs):
+        MAX_SIZE = (500, 500) \
+            if attrs['object_type'] not in (ImageFiles.PPIN_TYPE, ImageFiles.GPIN_TYPE) \
+            else (32, 32)
+        value = attrs['image']
+        try:
+            img = Image.open(value.file)
+        except:
+            raise serializers.ValidationError('Error while opening image')
+        width, height = img.size
+        if width <= MAX_SIZE[0] and height <= MAX_SIZE[1]:
+            return value
+        try:
+            img.thumbnail(MAX_SIZE)
+            img_bytes = BytesIO()
+            img.save(img_bytes, format=img.format)
+            value.file = img_bytes
+            value.size = img_bytes.getbuffer().nbytes
+        except:
+            raise serializers.ValidationError('Error while compressing image')
+        attrs['image'] = value
+        return attrs
 
     def create(self, validated_data):
         new = ImageFiles.objects.create(**validated_data)
