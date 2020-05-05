@@ -66,6 +66,7 @@ class ImageFilesSerializer(ImageFilesMetaSerializer):
         ]
 
     def validate(self, attrs):
+        attrs = super().validate(attrs)
         MAX_SIZE = (500, 500) \
             if attrs['object_type'] not in (ImageFiles.PPIN_TYPE, ImageFiles.GPIN_TYPE) \
             else (32, 32)
