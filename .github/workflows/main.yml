@@ -29,9 +29,9 @@ jobs:
         coverage run --source='.' manage.py test -v 3
         coverage report --skip-covered | grep TOTAL
         
-    - name: Deploy to Heroku
-      uses: AkhileshNS/heroku-deploy@v3.0.4
-      with:
-        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-        heroku_email: "gordiig@gmail.com"
-        heroku_app_name: "gordiig-rsoi-media"
+#     - name: Deploy to Heroku
+#       uses: AkhileshNS/heroku-deploy@v3.0.4
+#       with:
+#         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+#         heroku_email: "gordiig@gmail.com"
+#         heroku_app_name: "gordiig-rsoi-media"
