@@ -90,5 +90,14 @@ class ImageFilesSerializer(ImageFilesMetaSerializer):
         return attrs
 
     def create(self, validated_data):
-        new = ImageFiles.objects.create(**validated_data)
-        return new
+        if validated_data['object_type'] == ImageFiles.PLACE_TYPE:
+            new = ImageFiles.objects.create(**validated_data)
+            return new
+        try:
+            img = ImageFiles.objects.get(object_id=validated_data['object_id'], object_type=validated_data['object_type'])
+        except ImageFiles.DoesNotExist:
+            new = ImageFiles.objects.create(**validated_data)
+            return new
+        img.update_image(validated_data['image'].file, validated_data['image'].name)
+        return img
+

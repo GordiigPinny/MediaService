@@ -29,6 +29,12 @@ class AddImageViewTestCase(BaseTestCase):
             'created_by': self.user.id,
             'image': open('TestUtils/testcat.jpg', 'rb'),
         }
+        self.data_201_user = {
+            'object_id': 1,
+            'object_type': ImageFiles.USER_TYPE,
+            'created_by': self.user.id,
+            'image': open('TestUtils/testcat.jpg', 'rb'),
+        }
         self.data_201_no_created_by = {
             'object_id': 1,
             'object_type': ImageFiles.USER_TYPE,
@@ -86,6 +92,17 @@ class AddImageViewTestCase(BaseTestCase):
         client.credentials(HTTP_AUTHORIZATION=self.token.token)
         response = client.post(path=self.path, data=self.data_201_pin)
         self.assertEqual(response.status_code, 201, msg='Wrong status code')
+
+    def testPost201_ChangeAvatar(self):
+        client = APIClient()
+        self.token.set_role(self.token.ROLES.USER)
+        client.credentials(HTTP_AUTHORIZATION=self.token.token)
+        response = client.post(path=self.path, data=self.data_201_user)
+        self.assertEqual(response.status_code, 201, msg='Wrong status code')
+        self.data_201_user['image'] = open('TestUtils/testcat.jpg', 'rb')
+        response = client.post(path=self.path, data=self.data_201_user)
+        self.assertEqual(response.status_code, 201, msg='Wrong status code')
+
 
     def testPost401_403_PlaceNotModerator(self):
         client = APIClient()

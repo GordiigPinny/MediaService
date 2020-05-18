@@ -25,7 +25,7 @@ SECRET_KEY = 's(vu4ja=_l&oa$hs7af-n9v)c45^yprr@9k4j=1m-l6ip8=8f5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', '198.199.84.48']
 
 
 # Application definition
@@ -163,9 +163,3 @@ APP_ID = ENV['MEDIA_APP_ID']
 APP_SECRET = ENV['MEDIA_SECRET']
 
 ALLOW_REQUESTS = True
-
-ON_HEROKU = not (os.getenv('ON_HEROKU', '0') == '0')
-
-if not DEBUG:
-    import django_heroku
-    django_heroku.settings(locals(), databases=ON_HEROKU, test_runner=False, secret_key=False)
